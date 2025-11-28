@@ -3,48 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>cron-toolkit-ts — the ultimate cron expression tool</title>
+  <title>cron-toolkit-ts — the ultimate cron tool</title>
   <meta name="description" content="Full Quartz + Unix cron parser with L, W, #n, wrapped ranges, DST-aware scheduling, and natural language descriptions." />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=4" />
   <link rel="icon" href="data:,">
 </head>
 <body>
   <div class="container">
     <header>
       <h1>cron-toolkit-ts</h1>
-      <p>TypeScript port of Perl’s <code>Cron::Toolkit</code> — <strong>400+ tests passed</strong></p>
+      <p id="description" class="big-description">every second</p>
     </header>
 
-    <div class="input-bar">
+    <div class="input-card">
       <input type="text" id="expr" placeholder="0 0 12 ? * 6L *" spellcheck="false" autofocus />
-      <select id="tz">
-        <option value="UTC">UTC</option>
-        <option value="America/New_York">New York</option>
-        <option value="America/Chicago">Chicago</option>
-        <option value="America/Los_Angeles">Los Angeles</option>
-        <option value="Europe/London">London</option>
-        <option value="Europe/Paris">Paris</option>
-        <option value="Asia/Tokyo">Tokyo</option>
-        <option value="Australia/Sydney">Sydney</option>
-      </select>
+      <div class="controls">
+        <select id="tz">
+          <option value="UTC">UTC</option>
+          <option value="America/New_York">New York</option>
+          <option value="America/Chicago">Chicago</option>
+          <option value="America/Los_Angeles">Los Angeles</option>
+          <option value="Europe/London">London</option>
+          <option value="Europe/Paris">Paris</option>
+          <option value="Asia/Tokyo">Tokyo</option>
+          <option value="Australia/Sydney">Sydney</option>
+        </select>
+        <button id="random-btn">Random</button>
+      </div>
     </div>
 
-    <div id="result">
-      <div id="description"></div>
-      <div id="next-runs"></div>
-      <pre id="tree" class="tree"></pre>
-      <div id="error" class="error"></div>
+    <!-- Clickable legend that toggles the syntax table -->
+    <div class="legend" id="legend-toggle">
+      <span class="info-icon">?</span>
+      <span class="field">second</span>
+      <span class="field">minute</span>
+      <span class="field">hour</span>
+      <span class="field">day-of-month</span>
+      <span class="field">month</span>
+      <span class="field">day-of-week</span>
+      <span class="field">year</span>
     </div>
+
+    <!-- Special syntax table — collapsed by default -->
+    <details class="syntax-table" id="syntax-details">
+      <summary>Quartz / Unix special syntax</summary>
+      <table>
+        <tr><td><code>L</code></td><td>last day of month</td></tr>
+        <tr><td><code>L-<em>n</em></code></td><td>nth-to-last day of month (e.g. <code>L-3</code>)</td></tr>
+        <tr><td><code>LW</code></td><td>last weekday of month</td></tr>
+        <tr><td><code><em>n</em>W</code></td><td>nearest weekday to day <em>n</em> (e.g. <code>15W</code>)</td></tr>
+        <tr><td><code><em>n</em>L</code></td><td>last specific weekday of month (e.g. <code>6L</code> = last Saturday)</td></tr>
+        <tr><td><code><em>dow</em>#<em>n</em></code></td><td>nth occurrence of weekday (e.g. <code>3#2</code> = 2nd Wednesday)</td></tr>
+        <tr><td><code><em>a</em>-<em>b</em></code></td><td>wrapped range (e.g. <code>6-2</code> = Sat through Tue)</td></tr>
+        <tr><td><code>?</code></td><td>no specific value (used when other field specifies day)</td></tr>
+      </table>
+    </details>
+
+    <section id="next-runs">
+      <h3>Next 3 occurrences</h3>
+      <ul id="next-list"></ul>
+    </section>
+
+    <details class="debug">
+      <summary>Debug tree (click to expand)</summary>
+      <pre id="tree"></pre>
+    </details>
+
+    <div id="error" class="error"></div>
 
     <footer>
       <a href="https://github.com/nathanielgraham/cron-toolkit-ts" target="_blank">GitHub</a> •
-      <a href="#" id="random">random example</a> •
-      <span id="permalink"></span>
+      <a href="#" id="permalink">permalink</a>
     </footer>
   </div>
 
-  <!-- Luxon + your built lib -->
   <script src="https://cdn.jsdelivr.net/npm/luxon@3.7.2/build/global/luxon.min.js"></script>
-  <script src="app.js"></script>
+  <script src="app.global.js"></script>
 </body>
 </html>

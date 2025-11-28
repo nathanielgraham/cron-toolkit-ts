@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
-    "build:demo": "tsup src/demo/app.ts --format iife --global-name=CronDemo --out-dir docs",
+    "build:demo": "tsup src/demo/app.ts --format iife --global-name=CronDemo --out-dir docs --entry.app=src/demo/app.ts",
     "dev": "npm run build:demo -- --watch",
     "test": "vitest run",
     "test:watch": "vitest",

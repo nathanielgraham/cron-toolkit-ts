@@ -1,4 +1,4 @@
-// src/demo/app.ts
+// src/demo/app.ts — FINAL, CRASH-PROOF VERSION
 import { CronToolkit } from '../CronToolkit';
 import { DateTime } from 'luxon';
 
@@ -15,65 +15,108 @@ const EXAMPLES = [
   '0 0 12 ? * 6-2 *',
 ];
 
-const $ = (s: string) => document.querySelector(s)! as HTMLElement;
-const exprInput = $('#expr') as HTMLInputElement;
-const tzSelect = $('#tz') as HTMLSelectElement;
-const descriptionEl = $('#description');
-const nextRunsEl = $('#next-runs');
-const treeEl = $('#tree');
-const errorEl = $('#error');
-const permalinkEl = $('#permalink');
-
 function update() {
+  // Get elements safely inside the function (they exist by now)
+  const exprInput = document.getElementById('expr') as HTMLInputElement;
+  const tzSelect = document.getElementById('tz') as HTMLSelectElement;
+  const descriptionEl = document.getElementById('description');
+  const nextListEl = document.getElementById('next-list');
+  const treeEl = document.getElementById('tree');
+  const errorEl = document.getElementById('error');
+  const permalinkEl = document.getElementById('permalink');
+
+  if (!exprInput || !tzSelect || !descriptionEl || !nextListEl || !treeEl || !errorEl || !permalinkEl) {
+    console.warn('Missing DOM elements — skipping update');
+    return;
+  }
+
   const expr = exprInput.value.trim() || '* * * * *';
   const tz = tzSelect.value;
+
+  errorEl.textContent = '';
+  treeEl.textContent = '';
+  nextListEl.innerHTML = '';
+  descriptionEl.textContent = 'every second';
 
   try {
     const cron = new CronToolkit(expr, { timeZone: tz });
 
     descriptionEl.textContent = cron.describe() || 'every second';
-    errorEl.textContent = '';
-    treeEl.style.display = 'block';
+
+    let cursor = DateTime.now().setZone(tz).plus({ seconds: 1 });
+    const runs: string[] = [];
+
+    for (let i = 0; i < 3; i++) {
+      const epoch = cron.next(cursor.toSeconds());
+      if (epoch === null) break;
+
+      const dt = DateTime.fromSeconds(epoch).setZone(tz);
+      runs.push(dt.toLocaleString(DateTime.DATETIME_FULL));
+      cursor = dt.plus({ seconds: 1 });
+    }
+
+    nextListEl.innerHTML = runs.length
+      ? runs.map(r => `<li>${r}</li>`).join('')
+      : '<li style="color:#888;font-style:italic">No upcoming runs</li>';
+
     treeEl.textContent = cron.dumpTree();
 
-    // Next 8 runs
-    let next = DateTime.now().setZone(tz);
-    const runs: string[] = [];
-    for (let i = 0; i < 8; i++) {
-      const epoch = cron.next(next.toSeconds());
-      if (epoch === null) break;
-      next = DateTime.fromSeconds(epoch).plus({ seconds: 1 });
-      runs.push(DateTime.fromSeconds(epoch).setZone(tz).toLocaleString(DateTime.DATETIME_FULL));
-    }
-    nextRunsEl.innerHTML = runs.length ? '<ul><li>' + runs.join('</li><li>') + '</li></ul>' : '<p>no upcoming runs</p>';
-
-    // Shareable URL
-    const hash = encodeURIComponent(expr);
-    permalinkEl.innerHTML = `<a href="#${hash}">permalink</a>`;
-    history.replaceState(null, '', '#' + hash);
+    const encoded = encodeURIComponent(expr);
+    permalinkEl.innerHTML = `<a href="#${encoded}">permalink</a>`;
+    history.replaceState(null, '', '#' + encoded);
 
   } catch (e: any) {
     descriptionEl.textContent = '';
-    errorEl.textContent = e.message;
-    treeEl.style.display = 'none';
-    nextRunsEl.innerHTML = '';
+    errorEl.textContent = e.message || 'Invalid cron expression';
+    nextListEl.innerHTML = '';
+    treeEl.textContent = '';
     permalinkEl.innerHTML = '';
   }
 }
 
-// Load from hash
+// Load from hash (safe — runs immediately)
 if (location.hash) {
-  exprInput.value = decodeURIComponent(location.hash.slice(1));
+  const hashExpr = decodeURIComponent(location.hash.slice(1));
+  if (hashExpr) {
+    const exprInput = document.getElementById('expr') as HTMLInputElement;
+    if (exprInput) exprInput.value = hashExpr;
+  }
 }
 
-// Random example
-$('#random').addEventListener('click', (e) => {
-  e.preventDefault();
-  const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
-  exprInput.value = ex;
+// === ALL EVENT LISTENERS + INITIAL RENDER — INSIDE DOMContentLoaded ===
+document.addEventListener('DOMContentLoaded', () => {
+  const exprInput = document.getElementById('expr') as HTMLInputElement;
+  const tzSelect = document.getElementById('tz') as HTMLSelectElement;
+  const randomBtn = document.getElementById('random-btn');
+  const legendToggle = document.getElementById('legend-toggle');
+  const syntaxDetails = document.getElementById('syntax-details') as HTMLDetailsElement;
+
+  if (!exprInput || !tzSelect) {
+    console.error('Required elements missing — page not ready');
+    return;
+  }
+
+  // Input events
+  exprInput.addEventListener('input', update);
+  tzSelect.addEventListener('change', update);
+
+  // Random button
+  if (randomBtn) {
+    randomBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+      exprInput.value = ex;
+      update();
+    });
+  }
+
+  // Legend toggle → syntax table
+  if (legendToggle && syntaxDetails) {
+    legendToggle.addEventListener('click', () => {
+      syntaxDetails.open = !syntaxDetails.open;
+    });
+  }
+
+  // Initial render
   update();
 });
-
-exprInput.addEventListener('input', update);
-tzSelect.addEventListener('change', update);
-window.addEventListener('load', update);
