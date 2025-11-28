@@ -72,7 +72,7 @@ export function formatTime(sec: number, min: number, hour: number): string {
   const ampm = hour >= 12 ? 'PM' : 'AM';
   const h12 = hour % 12 || 12;
 
-  if (min && sec) {
+  if (sec) {
     return `${h12}:${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')} ${ampm}`;
   }
   if (min) {

@@ -21,8 +21,8 @@ export class RangePattern extends CronPattern {
   }
 
   toEnglish(): string {
-    const from = this.children[0].toEnglish();
-    const to = this.children[1].toEnglish();
+    const from = this.children[0].englishValue();
+    const to = this.children[1].englishValue();
     return `every ${this.englishUnit()} from ${from} to ${to}`;
   }
 

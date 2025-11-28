@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "tsx src/test-cron.ts",
+    "test": "tsx test/test-cron.ts",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

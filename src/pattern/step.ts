@@ -1,8 +1,10 @@
 import { CronPattern } from './base';
 import { WildcardPattern } from './wildcard';
 import { RangePattern } from './range';
+import { SinglePattern } from './single';
 
 export class StepPattern extends CronPattern {
+
   constructor(
     fieldType: FieldType,
     public readonly base: CronPattern,
@@ -10,7 +12,6 @@ export class StepPattern extends CronPattern {
   ) {
     super(fieldType);
     this.addChild(base);
-    this.addChild({ value: step, toString: () => step.toString() } as any);
   }
 
   match(v: number, dt: DateTime): boolean {
@@ -32,10 +33,20 @@ export class StepPattern extends CronPattern {
 
   toEnglish(): string {
     let s = `every ${this.step} ${this.englishUnit()}`;
+    if (this.step != 1) { s += 's' };
     if (this.base instanceof RangePattern) {
-      s += ` ${this.base.toEnglish()}`;
-    } else if (!(this.base instanceof WildcardPattern)) {
-      s += ` starting ${this.base.toEnglish()}`;
+      const from = this.base.children[0].englishValue();
+      const to = this.base.children[1].englishValue();
+      s += ` from ${from} to ${to}`;
+    } else if (this.base instanceof SinglePattern) {
+      s += ' starting ';
+      if (/^second|minute|hour$/.test(this.base.fieldType)) {
+        s += 'at ';
+      }
+      else {
+        s += 'on ';
+      }
+      s += this.base.englishValue();
     }
     return s;
   }

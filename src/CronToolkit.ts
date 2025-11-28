@@ -72,25 +72,30 @@ private finalizeDow(node: CronPattern): void {
       return new SinglePattern(field, n);
     }
 
-    if (value.includes('-') && !value.includes('/')) {
-      const [a, b] = value.split('-').map(Number);
-      const wrapped = field === 'dow' && a > b;
-      return new RangePattern(field, a, b, wrapped);
-    }
-
-    if (value.includes('/')) {
-      const [base, step] = value.split('/');
-      const stepVal = +step;
-      const baseNode = base === '*' ? new WildcardPattern(field) : this.buildNode(field, base);
-      return new StepPattern(field, baseNode, stepVal);
-    }
-
     if (value.includes(',')) {
       const list = new ListPattern(field);
       for (const part of value.split(',')) {
         list.addChild(this.buildNode(field, part));
       }
       return list;
+    }
+
+    // range
+    if (/^(\*|\d+)-(\d+)$/.test(value)) {
+      const [a, b] = value.split('-');
+      if (a === '*') a = min;
+      const wrapped = field === 'dow' && a > b;
+      return new RangePattern(field, a, b, wrapped);
+    }
+
+    // step
+    if (value.includes('/')) {
+    //if (/^(\*|\d+)\/(\d+)$/.test(value)) {
+      const [base, step] = value.split('/');
+      const stepVal = +step;
+      //const baseNode = base === '*' ? new WildcardPattern(field) : this.buildNode(field, base);
+      const baseNode = this.buildNode(field, base);
+      return new StepPattern(field, baseNode, stepVal);
     }
 
     // Special cases
@@ -148,6 +153,7 @@ private finalizeDow(node: CronPattern): void {
         .join(' of ');
     }
 
+    // DMY
     let rest = '';
     const dom = filtered[3];
     const month = this.nodes[4];
@@ -155,13 +161,19 @@ private finalizeDow(node: CronPattern): void {
     const year = this.nodes[6];
 
     if (dom && !(dom instanceof UnspecifiedPattern)) {
+      if (dom instanceof SinglePattern ) {
+        rest += 'on ';
+      }
       rest += dom.toEnglish();
       rest += ' of ' + month.toEnglish();
     }
     if (dow && !(dow instanceof UnspecifiedPattern)) {
       if (rest) rest += ' and ';
-      rest += dow.toEnglish();
-      if (!(dom instanceof UnspecifiedPattern)) rest += ' of ' + month.toEnglish();
+
+      if (dow instanceof SinglePattern) {
+        rest += 'every ';
+      }
+      rest += dow.toEnglish() + ' of ' + month.toEnglish();
     }
     if (!(year instanceof WildcardPattern)) {
       rest += ' ' + year.toEnglish();

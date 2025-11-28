@@ -1,5 +1,5 @@
 // src/test-cron.ts
-import { CronToolkit } from './CronToolkit';
+import { CronToolkit } from '../src/CronToolkit';
 import { DateTime } from 'luxon';
 
 // Helper to show local time
@@ -9,12 +9,24 @@ function fmt(dt: DateTime) {
 
 const tests = [
   {
+    expr: '* * * * 3/2',
+    name: 'every five minutes on the first of every month'
+  },
+  {
+    expr: '0 0-30/2 0 ? 1 * *',
+    name: 'every five minutes on the first of every month'
+  },
+  {
+    expr: '0 0 0 L-1 * ? *',
+    name: 'midnight every day of every month from January to March, every month from June to September'
+  },
+  {
     expr: '0 30 14 ? * 6-2 *',
     tz: 'Europe/London',
     name: '2:30 PM every day from Saturday to Tuesday'
   },
   {
-    expr: '0 0 12 * * ?',
+    expr: '1 0 12 * * ?',
     name: 'Daily at noon'
   },
   {
@@ -50,7 +62,9 @@ console.log('Cron::Toolkit TypeScript Port — Live Test\n');
 for (const t of tests) {
   const cron = new CronToolkit(t.expr, { timeZone: t.tz });
   
+  console.dir(cron.nodes);
   console.log(`Expression : ${t.expr}`);
+  console.log(`asString : ${cron.asString()}`);
   console.log(`Time zone   : ${t.tz || 'UTC'}`);
   console.log(`Description : ${cron.describe()}`);
   
