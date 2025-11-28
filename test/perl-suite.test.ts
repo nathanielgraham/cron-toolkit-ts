@@ -21,7 +21,7 @@ const data: TestCase[] = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, 'cron_tests.json'), 'utf-8')
 );
 
-describe('100% faithful to Perl Cron::Toolkit (400+ tests)', () => {
+describe('Imported tests from Perl Cron::Toolkit', () => {
   for (const t of data) {
     if (t.invalid) continue; // skip known invalids
 
@@ -30,7 +30,7 @@ describe('100% faithful to Perl Cron::Toolkit (400+ tests)', () => {
       const base = t.base_epoch ? DateTime.fromSeconds(t.base_epoch) : DateTime.now();
       const zone = t.tz || 'UTC';
 
-      const cron = new CronToolkit(t.expr, { timeZone: zone });
+      const cron = new CronToolkit(t.expr, { utc_offset: t.utc_offset, time_zone: t.tz });
 
       // Test description
       expect(cron.describe()).toBe(t.desc);

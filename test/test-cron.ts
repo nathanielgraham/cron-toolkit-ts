@@ -62,7 +62,8 @@ console.log('Cron::Toolkit TypeScript Port — Live Test\n');
 for (const t of tests) {
   const cron = new CronToolkit(t.expr, { timeZone: t.tz });
   
-  console.dir(cron.nodes);
+  //console.dir(cron.nodes);
+  console.log(cron.dumpTree());
   console.log(`Expression : ${t.expr}`);
   console.log(`asString : ${cron.asString()}`);
   console.log(`Time zone   : ${t.tz || 'UTC'}`);
@@ -70,14 +71,16 @@ for (const t of tests) {
   
   const now = DateTime.now().setZone(t.tz || 'UTC');
   const next = cron.next(now.toSeconds());
-  const prev = cron.previous ? cron.previous(now.toSeconds()) : null;
-
-  if (next) {
+  const prev = cron.previous(now.toSeconds());
+  //if (next) {
+    //console.log(`Next run    : ${fmt(DateTime.fromSeconds(next).setZone(t.tz || 'UTC'))}`);
+    console.log(`Next run    : ${next} `);
     console.log(`Next run    : ${fmt(DateTime.fromSeconds(next).setZone(t.tz || 'UTC'))}`);
-  }
-  if (prev) {
+  //}
+  //if (prev) {
+    console.log(`Previous run    : ${prev} `);
     console.log(`Previous run: ${fmt(DateTime.fromSeconds(prev).setZone(t.tz || 'UTC'))}`);
-  }
+  //}
   
   console.log('─'.repeat(60));
 }
