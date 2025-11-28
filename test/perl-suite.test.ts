@@ -30,7 +30,7 @@ describe('Imported tests from Perl Cron::Toolkit', () => {
       const base = t.base_epoch ? DateTime.fromSeconds(t.base_epoch) : DateTime.now();
       const zone = t.tz || 'UTC';
 
-      const cron = new CronToolkit(t.expr, { utc_offset: t.utc_offset, time_zone: t.tz });
+      const cron = new CronToolkit(t.expr, { utcOffset: t.utc_offset, timeZone: t.tz });
 
       // Test description
       expect(cron.describe()).toBe(t.desc);

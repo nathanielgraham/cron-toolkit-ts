@@ -40,23 +40,23 @@ export class CronToolkit {
 
   constructor(
     public readonly expression: string,
-    options: { time_zone?: string; utc_offset?: number } = {}
+    options: { timeZone?: string; utcOffset?: number } = {}
   ) {
-    if (options.utc_offset != null) this.utc_offset = options.utc_offset;
-    if (options.time_zone != null) this.time_zone = options.time_zone;
+    if (options.utcOffset != null) this.utcOffset = options.utcOffset;
+    if (options.timeZone != null) this.timeZone = options.timeZone;
     this.parse(expression);
   }
 
-  get time_zone(): string { return this._timeZone; }
-  set time_zone(tz: string) {
+  get timeZone(): string { return this._timeZone; }
+  set timeZone(tz: string) {
     const dt = DateTime.now().setZone(tz);
     if (!dt.isValid) throw new Error(`Invalid time_zone: ${tz}`);
     this._timeZone = tz;
     this._utcOffset = Math.round(dt.offset);
   }
 
-  get utc_offset(): number { return this._utcOffset; }
-  set utc_offset(offset: number) {
+  get utcOffset(): number { return this._utcOffset; }
+  set utcOffset(offset: number) {
     if (!Number.isInteger(offset) || offset < -1080 || offset > 1080) {
       throw new Error('utc_offset must be integer minutes between -1080 and +1080');
     }
