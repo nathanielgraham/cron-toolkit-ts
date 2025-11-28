@@ -75,7 +75,7 @@ https://nathanielgraham.github.io/cron-toolkit-ts
 
 Nathaniel Graham
 
-GitHub: https://github.com/nathanielgraham
+GitHub: https://github.com/nathanielgraham/cron-toolkit-perl 
 Original Perl module: Cron::Toolkit v0.12
 
 ## License
