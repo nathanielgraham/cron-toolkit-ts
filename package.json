@@ -1,5 +1,5 @@
 {
-  "name": "cron-toolkit-ts",
+  "name": "@nathanielgraham/cron-toolkit-ts",
   "version": "1.0.0",
   "description": "TypeScript port of Perl's Cron::Toolkit",
   "main": "dist/index.js",

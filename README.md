@@ -1,18 +1,23 @@
+[![Demo](https://img.shields.io/badge/demo-live-blue.svg?style=flat-square&logo=github)](https://nathanielgraham.github.io/cron-toolkit-ts)
+[![npm](https://img.shields.io/npm/v/@nathanielgraham/cron-toolkit-ts?style=flat-square&logo=npm)](https://www.npmjs.com/package/@nathanielgraham/cron-toolkit-ts)
+[![Tests](https://img.shields.io/badge/tests-400%2B%20passing-brightgreen?style=flat-square)](https://github.com/nathanielgraham/cron-toolkit-ts/actions)
+
 # cron-toolkit-ts
 
 TypeScript port of Perl's Cron::Toolkit v0.12
 
-Passes all 400+ original Perl tests — including leap years, DST transitions, wrapped ranges (6-2), nth weekdays (1#5), last day of month (L), and every edge case.
+Passes all 400+ original Perl tests — including leap years, DST transitions, and many edge cases.
 
 ## Features
 
-- Full Unix (5-field) and Quartz (7-field) syntax
-- All special syntax: L, L-n, LW, nW, #n, nL, wrapped DOW (6-2)
+- Full 7-field Quartz syntax (seconds and year fields)
+- All special tokens supported: L, L-n, LW, nW, #n, nL
 - Both day-of-month and day-of-week may be specified simultaneously (AND logic)
-- Full timezone + utcOffset support
-- Real DST handling (spring forward skips, fall back repeats)
-- Natural language describe() output
-- next(), previous(), is_match()
+- Proper Quartz-compatible DST handling
+- Time-zone support via IANA names or fixed UTC offsets
+- Natural-language English descriptions
+- Complete crontab parsing with environment variable expansion
+- Full abstract syntax tree and `dumpTree()` for debugging
 
 ## Installation
 

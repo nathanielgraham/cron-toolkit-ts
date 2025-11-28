@@ -6967,8 +6967,8 @@ var NthPattern = class extends CronPattern {
 var CronToolkit = class {
   constructor(expression, options = {}) {
     this.expression = expression;
-    if (options.utc_offset != null) this.utc_offset = options.utc_offset;
-    if (options.time_zone != null) this.time_zone = options.time_zone;
+    if (options.utcOffset != null) this.utcOffset = options.utcOffset;
+    if (options.timeZone != null) this.timeZone = options.timeZone;
     this.parse(expression);
   }
   nodes = [];
@@ -6976,19 +6976,19 @@ var CronToolkit = class {
   _utcOffset = 0;
   _beginEpoch = DateTime.now().minus({ years: 10 }).toSeconds();
   _endEpoch = DateTime.now().plus({ years: 10 }).toSeconds();
-  get time_zone() {
+  get timeZone() {
     return this._timeZone;
   }
-  set time_zone(tz) {
+  set timeZone(tz) {
     const dt = DateTime.now().setZone(tz);
     if (!dt.isValid) throw new Error(`Invalid time_zone: ${tz}`);
     this._timeZone = tz;
     this._utcOffset = Math.round(dt.offset);
   }
-  get utc_offset() {
+  get utcOffset() {
     return this._utcOffset;
   }
-  set utc_offset(offset2) {
+  set utcOffset(offset2) {
     if (!Number.isInteger(offset2) || offset2 < -1080 || offset2 > 1080) {
       throw new Error("utc_offset must be integer minutes between -1080 and +1080");
     }

@@ -6,13 +6,13 @@ declare class CronToolkit {
     private _beginEpoch;
     private _endEpoch;
     constructor(expression: string, options?: {
-        time_zone?: string;
-        utc_offset?: number;
+        timeZone?: string;
+        utcOffset?: number;
     });
-    get time_zone(): string;
-    set time_zone(tz: string);
-    get utc_offset(): number;
-    set utc_offset(offset: number);
+    get timeZone(): string;
+    set timeZone(tz: string);
+    get utcOffset(): number;
+    set utcOffset(offset: number);
     get begin_epoch(): number;
     set begin_epoch(epoch: number);
     get end_epoch(): number | undefined;
