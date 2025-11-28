@@ -9,7 +9,7 @@ Passes all 400+ original Perl tests — including leap years, DST transitions, w
 - Full Unix (5-field) and Quartz (7-field) syntax
 - All special syntax: L, L-n, LW, nW, #n, nL, wrapped DOW (6-2)
 - Both day-of-month and day-of-week may be specified simultaneously (AND logic)
-- Full timezone + utc_offset support
+- Full timezone + utcOffset support
 - Real DST handling (spring forward skips, fall back repeats)
 - Natural language describe() output
 - next(), previous(), is_match()
@@ -24,7 +24,7 @@ npm install cron-toolkit-ts
 import { CronToolkit } from 'cron-toolkit-ts';
 
 const cron = new CronToolkit('0 0 12 ? * 6L *', {
-  time_zone: 'America/New_York'
+  timeZone: 'America/New_York'
 });
 
 console.log(cron.describe());
@@ -48,17 +48,17 @@ console.log(cron.next);
 
 ```
 const cron = new CronToolkit('0 30 9 ? * MON-FRI *', {
-  time_zone: 'Europe/London'  // Automatically sets correct offset
+  timeZone: 'Europe/London'  // Automatically sets correct offset
   // or
-  // utc_offset: 60             // Manual override
+  // utcOffset: 60             // Manual override
 });
 ```
 
 ## API
 
 - new CronToolkit(expr, options?)
-  - options.time_zone: IANA zone (e.g. "America/New_York")
-  - options.utc_offset: Minutes from UTC
+  - options.timeZone: IANA zone (e.g. "America/New_York")
+  - options.utcOffset: Minutes from UTC
 - describe() → human readable string
 - next(from?) → next run epoch (UTC)
 - previous(from?) → previous run epoch (UTC)

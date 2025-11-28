@@ -1,119 +1,50 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>cron-toolkit-ts — The Perfect Cron Parser</title>
-  <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; color: #333; background: #f9f9f9; }
-    h1, h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
-    pre { background: #2d3748; color: #e2e8f0; padding: 16px; border-radius: 8px; overflow-x: auto; font-family: 'Courier New', monospace; }
-    code { background: #f7fafc; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
-    .demo { background: #fff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin: 20px 0; }
-    .input { width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-family: 'Courier New', monospace; }
-    .output { margin-top: 10px; padding: 10px; background: #f7fafc; border-radius: 4px; }
-    footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 0.9em; color: #666; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>cron-toolkit-ts — the ultimate cron expression tool</title>
+  <meta name="description" content="Full Quartz + Unix cron parser with L, W, #n, wrapped ranges, DST-aware scheduling, and natural language descriptions." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:,">
 </head>
 <body>
-  <header>
-    <h1>cron-toolkit-ts</h1>
-    <p><strong>TypeScript port of Perl's Cron::Toolkit</strong> — timezone-aware, DST-correct.</p>
-  </header>
+  <div class="container">
+    <header>
+      <h1>cron-toolkit-ts</h1>
+      <p>TypeScript port of Perl’s <code>Cron::Toolkit</code> — <strong>400+ tests passed</strong></p>
+    </header>
 
-  <section>
-    <h2>Live Demo</h2>
-    <div class="demo">
-      <p>Enter a cron expression:</p>
-      <input type="text" id="expr" class="input" value="0 0 12 ? * 6L *" placeholder="e.g., 0 30 14 ? * MON *">
-      <button onclick="runDemo()">Parse</button>
-      <div id="output" class="output"></div>
+    <div class="input-bar">
+      <input type="text" id="expr" placeholder="0 0 12 ? * 6L *" spellcheck="false" autofocus />
+      <select id="tz">
+        <option value="UTC">UTC</option>
+        <option value="America/New_York">New York</option>
+        <option value="America/Chicago">Chicago</option>
+        <option value="America/Los_Angeles">Los Angeles</option>
+        <option value="Europe/London">London</option>
+        <option value="Europe/Paris">Paris</option>
+        <option value="Asia/Tokyo">Tokyo</option>
+        <option value="Australia/Sydney">Sydney</option>
+      </select>
     </div>
-  </section>
 
-  <section>
-    <h2>API Overview</h2>
-    <h3>Instantiation</h3>
-    <pre><code>import { CronToolkit } from 'cron-toolkit-ts';
+    <div id="result">
+      <div id="description"></div>
+      <div id="next-runs"></div>
+      <pre id="tree" class="tree"></pre>
+      <div id="error" class="error"></div>
+    </div>
 
-const cron = new CronToolkit('0 30 14 ? * 6L *', { 
-  time_zone: 'America/New_York'
-});</code></pre>
+    <footer>
+      <a href="https://github.com/nathanielgraham/cron-toolkit-ts" target="_blank">GitHub</a> •
+      <a href="#" id="random">random example</a> •
+      <span id="permalink"></span>
+    </footer>
+  </div>
 
-    <h3>Describe</h3>
-    <pre><code>console.log(cron.describe());
-// → "2:30 PM on the last Saturday of every month"</code></pre>
-
-    <h3>Next & Previous</h3>
-    <pre><code>const now = Math.floor(Date.now() / 1000);
-console.log(new Date(cron.next(now) * 1000));    // Next run
-console.log(new Date(cron.previous(now) * 1000)); // Previous run</code></pre>
-
-    <h3>Is Match</h3>
-    <pre><code>console.log(cron.is_match(now));  // true/false</code></pre>
-
-    <h3>Tree Dump</h3>
-    <pre><code>console.log(cron.dumpTree());
-/*
-┌─ second: 0
-├─ minute: 30
-├─ hour: 14
-├─ dom: ?
-├─ month: *
-├─ dow: 6L
-└─ year: *
-*/</code></pre>
-  </section>
-
-  <section>
-    <h2>Features</h2>
-    <ul>
-      <li><strong>Full Syntax:</strong> Unix 5-field + Quartz 7-field</li>
-      <li><strong>Specials:</strong> L, L-n, LW, nW, #n, nL, wrapped (6-2)</li>
-      <li><strong>Timezones/DST:</strong> IANA zones, UTC offsets, transition handling</li>
-      <li><strong>Leap Years:</strong> Feb 29, century rules</li>
-      <li><strong>Descriptions:</strong> Natural language output</li>
-      <li><strong>Tree Dump:</strong> Perl-style visualization</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Installation</h2>
-    <pre><code>npm install cron-toolkit-ts</code></pre>
-  </section>
-
-  <footer>
-    <p>Made by <a href="https://github.com/nathanielgraham">Nathaniel Graham</a></p>
-    <p><a href="https://github.com/nathanielgraham/cron-toolkit-ts">GitHub</a> | <a href="https://www.npmjs.com/package/cron-toolkit-ts">npm</a> | MIT License</p>
-  </footer>
-
-  <!-- Load Luxon first -->
-  <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
-  <!-- Load the library via UMD from unpkg -->
-  <script src="https://unpkg.com/cron-toolkit-ts@1.0.0/dist/index.js"></script>
-  <script>
-    function runDemo() {
-      const expr = document.getElementById('expr').value;
-      try {
-        const cron = new CronToolkit(expr);
-        const now = Math.floor(Date.now() / 1000);
-        const next = cron.next(now);
-        const prev = cron.previous(now);
-        const isMatch = cron.is_match(now);
-        const desc = cron.describe();
-        const tree = cron.dumpTree();
-        document.getElementById('output').innerHTML = `
-          <strong>Description:</strong> ${desc}<br>
-          <strong>Matches now?</strong> ${isMatch ? 'Yes' : 'No'}<br>
-          <strong>Next run:</strong> ${new Date(next * 1000).toLocaleString()}<br>
-          <strong>Previous run:</strong> ${new Date(prev * 1000).toLocaleString()}<br>
-          <strong>Tree:</strong><br><pre>${tree}</pre>
-        `;
-      } catch (e) {
-        document.getElementById('output').innerHTML = `<strong>Error:</strong> ${e.message}`;
-      }
-    }
-  </script>
+  <!-- Luxon + your built lib -->
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3.7.2/build/global/luxon.min.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

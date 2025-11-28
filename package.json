@@ -8,7 +8,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts --tsconfig tsconfig.json --clean",
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "build:demo": "tsup src/demo/app.ts --format iife --global-name=CronDemo --out-dir docs",
+    "dev": "npm run build:demo -- --watch",
     "test": "vitest run",
     "test:watch": "vitest",
     "prepublishOnly": "npm run build"
