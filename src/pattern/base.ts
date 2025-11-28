@@ -16,7 +16,14 @@ import {
 
 export type FieldType = 'second' | 'minute' | 'hour' | 'dom' | 'month' | 'dow' | 'year';
 
-export abstract class CronPattern {
+export interface MatchablePattern {
+  match(value: number, dt: DateTime): boolean;
+  toString(): string;
+  toEnglish(): string;
+  _dumpTree(indent?: string): string;
+}
+
+export abstract class CronPattern implements MatchablePattern {
   children: CronPattern[] = [];
   value?: number;
 
@@ -26,6 +33,10 @@ export abstract class CronPattern {
   ) {
     this.value = value;
   }
+
+  abstract match(value: number, dt: DateTime): boolean;
+  abstract toString(): string;
+  abstract toEnglish(): string;
 
   addChild(child: CronPattern) {
     this.children.push(child);
