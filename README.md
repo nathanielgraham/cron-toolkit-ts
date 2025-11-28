@@ -21,7 +21,7 @@ Passes all 400+ original Perl tests — including leap years, DST transitions, a
 
 ## Installation
 
-npm install cron-toolkit-ts
+npm install @nathanielgraham/cron-toolkit-ts
 
 ## Usage
 
