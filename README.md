@@ -5,7 +5,7 @@
 # cron-toolkit-ts
 
 cron-toolkit-ts is a TypeScript library for parsing cron expressions, generating english descriptions, and calculating next and previous occurrences.
-This is a faithful port of Cron::Toolkit 0.12, originally written in Perl. Passes all 400+ tests from the original Perl version. 
+This is a faithful port of Cron::Toolkit 1.00, originally written in Perl. Passes all 400+ tests from the original Perl version. 
 
 ## Features
 

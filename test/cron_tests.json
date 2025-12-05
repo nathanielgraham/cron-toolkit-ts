@@ -120,6 +120,21 @@
       "utc_offset" : 0
    },
    {
+      "as_quartz_string" : "* * * * 2/5 ? *",
+      "as_string" : "* * * * 2/5 ? *",
+      "as_unix_string" : "* * * 2/5 *",
+      "base_epoch" : 1761177600,
+      "category" : "general",
+      "desc" : "every second of every 5 months starting on February",
+      "expr" : "* * * * 2/5 * *",
+      "invalid" : 0,
+      "next_epoch" : 1764547200,
+      "prev_epoch" : 1754006399,
+      "type" : "quartz",
+      "tz" : "Europe/London",
+      "utc_offset" : 0.0
+   },
+   {
       "as_quartz_string" : "*/15 * * * * ? *",
       "as_string" : "*/15 * * * * ? *",
       "as_unix_string" : "* * * * *",
