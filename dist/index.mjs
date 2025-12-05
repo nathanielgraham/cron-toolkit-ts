@@ -731,7 +731,7 @@ var CronToolkit = class {
   }
   describe() {
     const filtered = this.nodes.map(
-      (node, i, arr) => node instanceof WildcardPattern && i > 0 && arr[i - 1] instanceof WildcardPattern ? null : node
+      (node, i, arr) => node instanceof UnspecifiedPattern || node instanceof WildcardPattern && i > 0 && arr[i - 1] instanceof WildcardPattern ? null : node
     );
     const hmsNodes = filtered.slice(0, 3).filter(Boolean);
     const wildHMS = hmsNodes.every((n) => n instanceof WildcardPattern);
@@ -752,19 +752,22 @@ var CronToolkit = class {
     const month = this.nodes[4];
     const dow = filtered[5];
     const year = this.nodes[6];
-    if (dom && !(dom instanceof UnspecifiedPattern)) {
+    if (dom) {
       if (dom instanceof SinglePattern) {
         rest += "on ";
       }
       rest += dom.toEnglish();
       rest += " of " + month.toEnglish();
     }
-    if (dow && !(dow instanceof UnspecifiedPattern)) {
+    if (dow) {
       if (rest) rest += " and ";
       if (dow instanceof SinglePattern) {
         rest += "every ";
       }
       rest += dow.toEnglish() + " of " + month.toEnglish();
+    }
+    if (month && !(month instanceof WildcardPattern) && !dom && !dow) {
+      rest += "of " + month.toEnglish();
     }
     if (!(year instanceof WildcardPattern)) {
       rest += " " + year.toEnglish();
@@ -778,7 +781,7 @@ var CronToolkit = class {
     let str = this.asString();
     const fields = str.split(" ");
     if (fields.length < 6) return str;
-    const dow = fields[5].replace(/\b([1-7])\b/g, (m) => {
+    const dow = fields[5].replace(/(?<![L#/])\b([1-7])\b/g, (m) => {
       const n = parseInt(m);
       return n === 7 ? "1" : (n + 1).toString();
     });
