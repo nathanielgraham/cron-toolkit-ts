@@ -700,8 +700,11 @@ var CronToolkit = class {
       dt = this._plus_one(dt, this.nodes[i + 1].fieldType);
     }
     const yearNode = this.nodes[6];
-    const yearHigh = yearNode.highest(dt) ?? dt.year;
-    if (dt.year > yearHigh) dt = dt.set({ year: yearHigh });
+    const yearLow = yearNode.lowest(dt);
+    let dtlow = dt;
+    dtlow.set({ year: yearLow });
+    dtlow = this._minus_one(dtlow, yearNode.fieldType);
+    if (dt < dtlow) dt = dtlow;
     const maxDate = import_luxon.DateTime.fromObject({ year: 2099, month: 12, day: 31 }, { zone: "UTC" });
     while (dt <= maxDate) {
       if (this.matches(dt)) return dt.toSeconds() - this._utcOffset * 60;
@@ -731,8 +734,11 @@ var CronToolkit = class {
       dt = this._minus_one(dt, this.nodes[i + 1].fieldType);
     }
     const yearNode = this.nodes[6];
-    const yearHigh = yearNode.highest(dt) ?? dt.year;
-    if (dt.year > yearHigh) dt = dt.set({ year: yearHigh });
+    const yearHigh = yearNode.highest(dt);
+    let dthigh = dt;
+    dthigh.set({ year: yearHigh });
+    dthigh = this._plus_one(dthigh, yearNode.fieldType);
+    if (dt > dthigh) dt = dthigh;
     const minDate = import_luxon.DateTime.fromObject({ year: 1970, month: 1, day: 1 }, { zone: "UTC" });
     while (dt >= minDate) {
       if (this.matches(dt)) return dt.toSeconds() - this._utcOffset * 60;
