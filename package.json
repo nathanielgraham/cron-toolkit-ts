@@ -1,7 +1,7 @@
 {
   "name": "@nathanielgraham/cron-toolkit-ts",
-  "version": "1.0.5",
-  "description": "TypeScript port of Perl's Cron::Toolkit",
+  "version": "1.0.6",
+  "description": "TypeScript port of Perl's Cron::Toolkit 1.03",
   "dependencies": {
     "@types/luxon": "^3.7.1",
     "luxon": "^3.7.2"
