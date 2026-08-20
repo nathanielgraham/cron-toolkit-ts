@@ -261,6 +261,7 @@ export class CronToolkit {
     const baseSeconds = from ?? DateTime.now().toSeconds();
     let dt = DateTime.fromSeconds(baseSeconds + this._utcOffset * 60, { zone: 'UTC' }).plus({ seconds: 1 });
 
+    // HMS shortcut / odometer carry
     NODE: for (let i = 0; i <= 2; i++) {
       const node = this.nodes[i];
       const field = node.fieldType;
@@ -268,7 +269,9 @@ export class CronToolkit {
       const lowval = node.lowest(dt) ?? 0;
       const highval = node.highest(dt) ?? 59;
 
-      if (curval >= highval) {
+      // Changed condition + explicit handling for exact highval
+      // (ported from Perl Cron::Toolkit 1.01/1.02)
+      if (curval > highval || (curval === highval && !node.match(curval, dt))) {
         dt = this._setField(dt, field, lowval);
         dt = this._plus_one(dt, this.nodes[i + 1].fieldType);
         continue NODE;
@@ -279,18 +282,12 @@ export class CronToolkit {
         if (this.matches(test)) return test.toSeconds() - this._utcOffset * 60;
       }
 
+      // flip if no match found in this field
       dt = this._setField(dt, field, lowval);
       dt = this._plus_one(dt, this.nodes[i + 1].fieldType);
     }
 
-    // set date
-    const yearNode = this.nodes[6];
-    const yearLow = yearNode.lowest(dt) ;
-    let dtlow = dt;
-    dtlow.set({ year: yearLow });
-    dtlow = this._minus_one(dtlow, yearNode.fieldType);
-    if (dt < dtlow) dt = dtlow;
-
+    // Brute force for DOM/DOW/year (no year-adjustment block)
     const maxDate = DateTime.fromObject({ year: 2099, month: 12, day: 31 }, { zone: 'UTC' });
     while (dt <= maxDate) {
       if (this.matches(dt)) return dt.toSeconds() - this._utcOffset * 60;
@@ -304,6 +301,7 @@ export class CronToolkit {
     const baseSeconds = from ?? DateTime.now().toSeconds();
     let dt = DateTime.fromSeconds(baseSeconds + this._utcOffset * 60, { zone: 'UTC' }).minus({ seconds: 1 });
 
+    // HMS shortcut / odometer carry (backward)
     NODE: for (let i = 0; i <= 2; i++) {
       const node = this.nodes[i];
       const field = node.fieldType;
@@ -311,7 +309,9 @@ export class CronToolkit {
       const lowval = node.lowest(dt) ?? 0;
       const highval = node.highest(dt) ?? 59;
 
-      if (curval <= lowval) {
+      // Changed condition + explicit handling for exact lowval
+      // (ported from Perl Cron::Toolkit 1.01/1.02)
+      if (curval < lowval || (curval === lowval && !node.match(curval, dt))) {
         dt = this._setField(dt, field, highval);
         dt = this._minus_one(dt, this.nodes[i + 1].fieldType);
         continue NODE;
@@ -322,18 +322,12 @@ export class CronToolkit {
         if (this.matches(test)) return test.toSeconds() - this._utcOffset * 60;
       }
 
+      // flip if no match found in this field
       dt = this._setField(dt, field, highval);
       dt = this._minus_one(dt, this.nodes[i + 1].fieldType);
     }
 
-    // set date
-    const yearNode = this.nodes[6];
-    const yearHigh = yearNode.highest(dt) ;
-    let dthigh = dt;
-    dthigh.set({ year: yearHigh });
-    dthigh = this._plus_one(dthigh, yearNode.fieldType);
-    if (dt > dthigh) dt = dthigh;
-
+    // Brute force for DOM/DOW/year (no year-adjustment block)
     const minDate = DateTime.fromObject({ year: 1970, month: 1, day: 1 }, { zone: 'UTC' });
     while (dt >= minDate) {
       if (this.matches(dt)) return dt.toSeconds() - this._utcOffset * 60;
