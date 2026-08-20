@@ -5,7 +5,7 @@
 # cron-toolkit-ts
 
 cron-toolkit-ts is a TypeScript library for parsing cron expressions, generating english descriptions, and calculating next and previous occurrences.
-This is a faithful port of Cron::Toolkit 1.00, originally written in Perl. Passes all 400+ tests from the original Perl version. 
+This is a faithful port of [Cron::Toolkit](https://metacpan.org/pod/Cron::Toolkit) **1.03**, originally written in Perl. Passes all 400+ tests from the original Perl version.
 
 ## Features
 
@@ -53,7 +53,7 @@ console.log(cron.dumpTree());
 ```
 const cron = new CronToolkit('0 30 9 ? * MON-FRI *', {
   timeZone: 'Europe/London'  // Automatically sets correct offset
-  utcOffset: 60              // Manual override
+  // utcOffset: 60           // Or use a fixed offset (do not combine with timeZone)
 });
 ```
 
