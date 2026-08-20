@@ -7166,7 +7166,7 @@ var CronDemo = (() => {
         const curval = field === "second" ? dt.second : field === "minute" ? dt.minute : dt.hour;
         const lowval = node.lowest(dt) ?? 0;
         const highval = node.highest(dt) ?? 59;
-        if (curval >= highval) {
+        if (curval > highval || curval === highval && !node.match(curval, dt)) {
           dt = this._setField(dt, field, lowval);
           dt = this._plus_one(dt, this.nodes[i + 1].fieldType);
           continue NODE;
@@ -7178,9 +7178,6 @@ var CronDemo = (() => {
         dt = this._setField(dt, field, lowval);
         dt = this._plus_one(dt, this.nodes[i + 1].fieldType);
       }
-      const yearNode = this.nodes[6];
-      const yearHigh = yearNode.highest(dt) ?? dt.year;
-      if (dt.year > yearHigh) dt = dt.set({ year: yearHigh });
       const maxDate = DateTime.fromObject({ year: 2099, month: 12, day: 31 }, { zone: "UTC" });
       while (dt <= maxDate) {
         if (this.matches(dt)) return dt.toSeconds() - this._utcOffset * 60;
@@ -7197,7 +7194,7 @@ var CronDemo = (() => {
         const curval = field === "second" ? dt.second : field === "minute" ? dt.minute : dt.hour;
         const lowval = node.lowest(dt) ?? 0;
         const highval = node.highest(dt) ?? 59;
-        if (curval <= lowval) {
+        if (curval < lowval || curval === lowval && !node.match(curval, dt)) {
           dt = this._setField(dt, field, highval);
           dt = this._minus_one(dt, this.nodes[i + 1].fieldType);
           continue NODE;
@@ -7209,9 +7206,6 @@ var CronDemo = (() => {
         dt = this._setField(dt, field, highval);
         dt = this._minus_one(dt, this.nodes[i + 1].fieldType);
       }
-      const yearNode = this.nodes[6];
-      const yearHigh = yearNode.highest(dt) ?? dt.year;
-      if (dt.year > yearHigh) dt = dt.set({ year: yearHigh });
       const minDate = DateTime.fromObject({ year: 1970, month: 1, day: 1 }, { zone: "UTC" });
       while (dt >= minDate) {
         if (this.matches(dt)) return dt.toSeconds() - this._utcOffset * 60;
@@ -7235,7 +7229,7 @@ var CronDemo = (() => {
     }
     describe() {
       const filtered = this.nodes.map(
-        (node, i, arr) => node instanceof WildcardPattern && i > 0 && arr[i - 1] instanceof WildcardPattern ? null : node
+        (node, i, arr) => node instanceof UnspecifiedPattern || node instanceof WildcardPattern && i > 0 && arr[i - 1] instanceof WildcardPattern ? null : node
       );
       const hmsNodes = filtered.slice(0, 3).filter(Boolean);
       const wildHMS = hmsNodes.every((n2) => n2 instanceof WildcardPattern);
@@ -7256,19 +7250,22 @@ var CronDemo = (() => {
       const month = this.nodes[4];
       const dow = filtered[5];
       const year = this.nodes[6];
-      if (dom && !(dom instanceof UnspecifiedPattern)) {
+      if (dom) {
         if (dom instanceof SinglePattern) {
           rest += "on ";
         }
         rest += dom.toEnglish();
         rest += " of " + month.toEnglish();
       }
-      if (dow && !(dow instanceof UnspecifiedPattern)) {
+      if (dow) {
         if (rest) rest += " and ";
         if (dow instanceof SinglePattern) {
           rest += "every ";
         }
         rest += dow.toEnglish() + " of " + month.toEnglish();
+      }
+      if (month && !(month instanceof WildcardPattern) && !dom && !dow) {
+        rest += "of " + month.toEnglish();
       }
       if (!(year instanceof WildcardPattern)) {
         rest += " " + year.toEnglish();
@@ -7282,7 +7279,7 @@ var CronDemo = (() => {
       let str = this.asString();
       const fields = str.split(" ");
       if (fields.length < 6) return str;
-      const dow = fields[5].replace(/\b([1-7])\b/g, (m) => {
+      const dow = fields[5].replace(/(?<![L#/])\b([1-7])\b/g, (m) => {
         const n2 = parseInt(m);
         return n2 === 7 ? "1" : (n2 + 1).toString();
       });
