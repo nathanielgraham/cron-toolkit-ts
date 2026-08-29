@@ -86,7 +86,8 @@ export class CronToolkit {
     if (fields.length !== 7) throw new Error('Expected 5–7 fields');
 
     fields[4] = fields[4].replace(/\b(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\b/g, m => MONTH_MAP[m]);
-    fields[5] = fields[5].replace(/\b(SUN|MON|TUE|WED|THU|FRI|SAT)\b/g, m => DOW_MAP_UNIX[m].toString());
+    // Allow trailing L/# and cron punctuation so MONL → 1L and MON#3 → 1#3 (Perl 1.04).
+    fields[5] = fields[5].replace(/\b(SUN|MON|TUE|WED|THU|FRI|SAT)(?=L\b|[#,\-\/?\s]|$)/g, m => DOW_MAP_UNIX[m].toString());
 
     if (fields[3] !== '?' && fields[5] === '*') fields[5] = '?';
     if (fields[3] === '*' && fields[5] !== '?') fields[3] = '?';
